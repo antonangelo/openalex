@@ -6,6 +6,17 @@ anton@angelo.nz
 import pprint
 from pyalex import Works, Authors, Sources, Institutions, Concepts, Publishers, Funders
 import pyalex
+import os
+
+import time
+import csv
+
+timestr = time.strftime("%Y%m%d-%H%M%S")
+yearstr = time.strftime("%Y")
+
+results_directory = timestr+"/"
+if not os.path.exists(results_directory):
+    os.makedirs(results_directory)
 
 def pretty_to_file(toprint, filename):
     with open(filename, "w", encoding="utf8") as output:
@@ -16,9 +27,9 @@ publication_years =  range(2000,2024)
 
 # ISO country code that we are interested in getting data for
 
-country_code = "se" # set this
+country_code = "au" # set this
 results_filename =  country_code + "_results.csv"
-results_directory = "results/"
+
 
 
 # get a list of institutions for the specific country, their RORs and overall publishing
