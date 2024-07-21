@@ -9,16 +9,25 @@ from pyalex import Works, Authors, Sources, Institutions, Concepts, Publishers, 
 import pyalex
 from itertools import chain
 from collections import Counter
+import time
+import os
 
 def pretty_to_file(toprint, filename):
     with open(filename, "w", encoding="utf8") as output:
         pprint.pprint(toprint, output)
+        
+timestr = time.strftime("%Y%m%d-%H%M")
+yearstr = time.strftime("%Y")
+
+results_directory = timestr+"/"
+if not os.path.exists(results_directory):
+    os.makedirs(results_directory)
 
 pyalex.config.email = "anton.angelo@canterbury.ac.nz" # set this to your own email.  It puts you in the openalex polite queue
 publication_years =  range(2000,2024)
 
-country_code = "gb" # set this (ISO country code)
-results_filename =  country_code + "_greenworks_results.csv"
+country_code = "nz" # set this (ISO country code)
+results_filename =  country_code + timestr +"_greenworks_results.csv"
 results_directory = "results/"
 
 # get a list of institutions for the specific country, their RORs and overall publishing
@@ -27,7 +36,7 @@ institutions = Institutions() \
     .filter(country_code=country_code) \
     .get()
 
-pretty_to_file(institutions, results_directory + country_code+"_institutions_full.py")
+pretty_to_file(institutions, results_directory + timestr+ country_code+"_institutions_full.py")
 
 # list of unique ROR codes 
 
