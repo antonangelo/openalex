@@ -1,12 +1,12 @@
 '''
 Using pyalex to get aan institution's OA locations
 
-anton@angelo.nz
+anton.angelo@canterbury.ac.nz
+Software is unlicensed: https://unlicense.org/
 '''
 
 import pprint
-from pyalex import Works, Authors, Sources, Institutions, Concepts, Publishers, Funders
-import pyalex
+from pyalex import config, Works, Authors, Sources, Institutions, Concepts, Publishers, Funders
 from itertools import chain
 from collections import Counter
 import time
@@ -18,17 +18,20 @@ def pretty_to_file(toprint, filename):
         
 timestr = time.strftime("%Y%m%d-%H%M")
 yearstr = time.strftime("%Y")
+country_code = "gb" # set this (ISO country code: nz, au, gb, ...)
+results_filename =  timestr +"_.csv"
 
-results_directory = timestr+"/"
+results_directory = "results/"+timestr+"_"+country_code+"_green_locations/"
 if not os.path.exists(results_directory):
     os.makedirs(results_directory)
 
-pyalex.config.email = "anton.angelo@canterbury.ac.nz" # set this to your own email.  It puts you in the openalex polite queue
-publication_years =  range(2000,2024)
+config.email = "anton.angelo@canterbury.ac.nz" # set this to your own email.  It puts you in the openalex polite queue
+config.max_retries = 0
+config.retry_backoff_factor = 0.1
+config.retry_http_codes = [429, 500, 503]
 
-country_code = "nz" # set this (ISO country code)
-results_filename =  country_code + timestr +"_greenworks_results.csv"
-results_directory = "results/"
+publication_years =  range(2000,2025) # expects a list ['2022']
+
 
 # get a list of institutions for the specific country, their RORs and overall publishing
 #use the pyalex https://github.com/J535D165/pyalex library 
@@ -36,7 +39,7 @@ institutions = Institutions() \
     .filter(country_code=country_code) \
     .get()
 
-pretty_to_file(institutions, results_directory + timestr+ country_code+"_institutions_full.py")
+pretty_to_file(institutions, results_directory + timestr+ "_"+country_code+"_institutions_full.py")
 
 # list of unique ROR codes 
 
@@ -44,7 +47,7 @@ rors_dict ={}
 for institution in institutions:
     rors_dict[institution["display_name"]] =institution["ror"]
 
-pretty_to_file(rors_dict,  results_directory + country_code+"_institutions_short.py")
+pretty_to_file(rors_dict,  results_directory +  "_"+country_code+"_institutions_short.py")
 
 #https://api.openalex.org/works?filter=authorships.institutions.lineage:I185492890,type:article,open_access.is_oa:true,best_oa_location.source.type:repository&per_page=10
 
